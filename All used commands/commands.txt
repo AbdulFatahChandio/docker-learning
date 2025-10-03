@@ -1,0 +1,11 @@
+# Start dev services
+docker compose --profile dev up -d
+
+# View logs
+docker compose logs -f
+
+# Stop containers (but keep them)
+docker compose --profile dev stop
+
+# Remove containers/networks/volumes
+docker compose --profile dev down
