@@ -1,64 +1,84 @@
 version: '3.9'
+
 services:
   # Development Service
   app-dev:
-    container_name: nestjs-app-dev
+    container_name: ${POSTGRES_DEV_CONTAINER}
     build:
       context: .
       dockerfile: Dockerfile.dev
     env_file:
       - .env.development
     ports:
-      - '3000:3000'
+      - "${PORT}:3000"
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
-      - db
+      - postgres
     profiles:
       - dev
+    networks:
+      - app-network
 
   # Production Service
   app-prod:
-    container_name: nestjs-app-prod
+    container_name: ${POSTGRES_PROD_CONTAINER}
     build:
       context: .
       dockerfile: Dockerfile.prod
     env_file:
-      - .env.production
+      - .env.development
     ports:
-      - '8080:3000'
+      - "${PORT}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
     depends_on:
-      - db
+      - postgres
     profiles:
       - prod
+    networks:
+      - app-network
 
   # Database Service (PostgreSQL)
-  db:
-    image: postgres:17-alpine
-    container_name: nestjs-database
-    environment:
-      - POSTGRES_USER=fatah
-      - POSTGRES_PASSWORD=12345
-      - POSTGRES_DB=postgres
+  postgres:
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    image: postgres:17.6
+    restart: unless-stopped
     ports:
-      - '5432:5432'
+      - "${POSTGRES_PORT}:5432"   # host:container
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - app-network
 
   # pgAdmin Service
   pgadmin:
+    container_name: ${PG_ADMIN_CONTAINER_NAME}
     image: dpage/pgadmin4
-    container_name: nestjs-pgadmin4 
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=adminfatah@example.com
-      - PGADMIN_DEFAULT_PASSWORD=admin123
-    ports:
-      - '5050:80'
+    restart: unless-stopped
     depends_on:
-      - db
-    profiles:
-      - dev
+      - postgres
+    ports:
+      - "${PG_ADMIN_PORT}:${PG_ADMIN_EXPOSE_PORT}"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin/data
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PG_ADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PG_ADMIN_PASSWORD}
+    networks:
+      - app-network
 
 volumes:
-  db-data:
+  postgres-data:
+    driver: local
+  pgadmin-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

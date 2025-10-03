@@ -9,3 +9,18 @@ docker compose --profile dev stop
 
 # Remove containers/networks/volumes
 docker compose --profile dev down
+
+# Start development services in detached mode (background)
+docker compose --profile dev up -d
+
+# Stop dev containers (keeps containers, volumes, and networks for later restart)
+docker compose --profile dev stop
+
+# Stop and remove dev containers + networks (volumes remain unless -v is added)
+docker compose --profile dev down
+
+# Build and start production services (runs in foreground unless -d is used)
+docker compose --profile prod up --build
+
+# Build and start development services (useful if Dockerfile.dev changed)
+docker compose --profile dev up --build
