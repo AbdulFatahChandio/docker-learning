@@ -14,7 +14,7 @@ services:
       - .:/app
       - /app/node_modules
     depends_on:
-        - db
+      - db
     profiles:
       - dev
 
@@ -29,34 +29,36 @@ services:
     ports:
       - '8080:3000'
     depends_on:
-        - db
+      - db
     profiles:
       - prod
 
-    # Database Service (postgreSQL)
-    db:
-      image: postgres:17-alpine
-      container_name: nestjs-Database
-      environment:
-        - POSTGRES_USER=fatah
-        - POSTGRES_PASSWORD=12345
-        - POSTGRES_DB=postgres
-      ports:
-        - '5432:5432'
-      volumes:
-        - db-data:/var/lib/postgresql/data
+  # Database Service (PostgreSQL)
+  db:
+    image: postgres:17-alpine
+    container_name: nestjs-database
+    environment:
+      - POSTGRES_USER=fatah
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
-  # pgAdmin Service (postgreSQL)
-    pgadmin:
-      image: dpage/pgadmin4
-      container_name: nestjs-pgadmin4 
-      environment:
-        - PGADMIN_DEFAULT_EMAIL=adminfatah@exapmle.com
-        - PGADMIN_DEFAULT_PASSWORD=admin123
-      ports:
-       -'5050:80'
-      depends_on:
-        - db
+  # pgAdmin Service
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: nestjs-pgadmin4 
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=adminfatah@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+    ports:
+      - '5050:80'
+    depends_on:
+      - db
+    profiles:
+      - dev
 
 volumes:
   db-data:
