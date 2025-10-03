@@ -1,0 +1,27 @@
+# Use the official Node.js image as the base image
+FROM node:24-alpine as build
+
+# Set the working directory inside the container
+WORKDIR /app
+
+
+# Copy package.json and install dependencies , * for all dependencies
+COPY package*.json ./
+RUN pnpm install
+
+# Copy application code
+COPY . . 
+
+# Build the application
+RUN pnpm run build
+
+# Use the official Node.js image as the base image
+FROM node:24-alpine AS production
+
+# Set the working directory inside the container
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+
+# Start the application 
+CMD ["pnpm", "run", "start:prod"]

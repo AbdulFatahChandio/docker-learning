@@ -1,0 +1,16 @@
+# Use the official Node.js image as the base image
+FROM node:24-alpine as development
+
+# Set the working directory inside the container
+WORKDIR /app
+
+
+# Copy package.json and install dependencies , * for all dependencies
+COPY package*.json ./
+RUN pnpm install
+
+# Copy application code
+COPY . . 
+
+# start the application development mode
+CMD ["pnpm","run", "start:dev"]
