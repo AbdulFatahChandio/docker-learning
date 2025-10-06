@@ -7,9 +7,9 @@ RUN npm install -g pnpm
 # Set the working directory inside the container
 WORKDIR /app
 
-
 # Copy package.json and install dependencies , * for all dependencies
 COPY package*.json ./
+
 RUN pnpm install
 
 # Copy application code

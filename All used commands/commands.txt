@@ -24,3 +24,7 @@ docker compose --profile prod up --build
 
 # Build and start development services (useful if Dockerfile.dev changed)
 docker compose --profile dev up --build
+
+# Build image from Dockerfile.dev
+docker build -f Dockerfile.dev -t nestFundNGO .
+
